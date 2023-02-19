@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: Swagger Docs
+  description: Project to learn API documentation using swagger
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: shubhampurwar35@gmail.com
+
+servers:
+  - url: '{protocol}://localhost:4000/api/{version}'
+    description: Localhost server (when app is in development stage)
+    variables:
+      protocol:
+        enum: [http, https]
+        default: http
+      version:
+        enum: [v1, v2]
+        default: v1
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+
+  schemas:
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+        course:
+          type: string
+        price:
+          type: number
+          format: int64
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        message:
+          type: string
+
+  responses:
+    BadRequestError:
+      description: Malformed URL syntax
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Server doesn't know how to handle the request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+
+paths:
+  /course:
+    get:
+      tags:
+        - Object
+      summary: Gets a course
+      description: Returns a JSON object containing id, course and price
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /courses:
+    get:
+      tags:
+        - Array
+      summary: Gets a list of courses
+      description: Returns a JSON array of course objects containing id, course and price
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  schema:
+                    $ref: '#/components/schemas/Course'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /course/{courseId}:
+    get:
+      tags:
+        - Path parameters
+      summary: Gets a course by courseId
+      description: Returns a course object containing id, course and price
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
