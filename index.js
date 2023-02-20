@@ -39,12 +39,40 @@ app.get('/api/v1', (_req, res) => {
   res.status(200).send('<h1>Swagger Docs</h1>');
 });
 
-app.get('/api/v1/course', (_req, res) => {
-  res.status(200).json(courses[0]);
-});
-
 app.get('/api/v1/courses', (_req, res) => {
   res.status(200).json(courses);
+});
+
+app.get('/api/v1/course', (_req, res) => {
+  const index = Math.floor(Math.random() * courses.length);
+  const course = courses[index];
+
+  res.status(200).json(course);
+});
+
+app.post('/api/v1/course', (req, res) => {
+  try {
+    let { id, course, price } = req.body;
+
+    if (!(id && course && price)) {
+      throw new CustomError('Please provide all the details', 400);
+    }
+
+    price = Number(price);
+
+    if (isNaN(price) || price <= 0) {
+      throw new CustomError('Price should be a positive number', 400);
+    }
+
+    courses.push({ id, course, price });
+
+    res.status(201).json(courses);
+  } catch (err) {
+    res.status(err.code || 500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 });
 
 app.get('/api/v1/course/:courseId', (req, res) => {
@@ -70,32 +98,7 @@ app.get('/api/v1/course/:courseId', (req, res) => {
   }
 });
 
-app.post('/api/v1/course/add', (req, res) => {
-  try {
-    let { id, course, price } = req.body;
-
-    if (!(id && course && price)) {
-      throw new CustomError('Please provide all the details', 400);
-    }
-
-    price = Number(price);
-
-    if (isNaN(price) || price <= 0) {
-      throw new CustomError('Price should be a positive number', 400);
-    }
-
-    courses.push({ id, course, price });
-
-    res.status(201).json(courses);
-  } catch (err) {
-    res.status(err.code || 500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
-
-app.put('/api/v1/course/update/:courseId', (req, res) => {
+app.put('/api/v1/course/:courseId', (req, res) => {
   try {
     const { courseId } = req.params;
     let { id, course, price } = req.body;
@@ -131,7 +134,7 @@ app.put('/api/v1/course/update/:courseId', (req, res) => {
   }
 });
 
-app.delete('/api/v1/course/delete/:courseId', (req, res) => {
+app.delete('/api/v1/course/:courseId', (req, res) => {
   try {
     const { courseId } = req.params;
 
@@ -148,6 +151,31 @@ app.delete('/api/v1/course/delete/:courseId', (req, res) => {
     courses.splice(courseIndex, 1);
 
     res.status(200).json(courses);
+  } catch (err) {
+    res.status(err.code || 500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+app.get('/api/v1/search', (req, res) => {
+  try {
+    const { course, price } = req.query;
+
+    if (!course || !price) {
+      throw new CustomError('Search keywords are not present', 400);
+    }
+
+    const searchResult = courses.find(
+      value => value.course === course && value.price === Number(price)
+    );
+
+    if (!searchResult) {
+      throw new CustomError('Course not found', 404);
+    }
+
+    res.status(200).json(searchResult);
   } catch (err) {
     res.status(err.code || 500).json({
       success: false,
