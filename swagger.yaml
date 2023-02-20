@@ -41,10 +41,10 @@ components:
           type: number
           format: int64
 
-    ArrayOfCourses: 
+    ArrayOfCourses:
       type: array
       items:
-        schema: 
+        schema:
           $ref: '#/components/schemas/course'
 
     Error:
@@ -57,13 +57,13 @@ components:
           type: string
 
   requestBody:
-    Course: 
+    Course:
       description: A JSON object containing id, course and price
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Course' 
+            $ref: '#/components/schemas/Course'
 
   responses:
     BadRequestError:
@@ -154,16 +154,17 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /course/create:
+  /course/add:
     post:
       tags:
         - Request body
+      summary: Adds a course
       description: Adds a new course to the courses array
       requestBody:
         $ref: '#/components/requestBody/Course'
       responses:
         '201':
-          description: 'Resource created',
+          description: 'Resource created'
           content:
             application/json:
               schema:
@@ -177,6 +178,7 @@ paths:
     put:
       tags:
         - Path parameters and request body
+      summary: Updates a course
       description: Finds a course by courseId and updates it
       parameters:
         - name: courseId
@@ -189,7 +191,7 @@ paths:
       responses:
         '201':
           description: 'Resource updated'
-          content: 
+          content:
             appication/json:
               schema:
                 $ref: '#/components/schemas/ArrayOfCourses'
@@ -198,12 +200,13 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
-          $ref: '#/components/responses/InternalServerError' 
+          $ref: '#/components/responses/InternalServerError'
 
   /course/delete/{courseId}:
     delete:
-      tags: 
+      tags:
         - Path parameters
+      summary: Deletes a course
       description: Finds a course by courseId and deletes it
       parameters:
         - name: courseId
@@ -211,7 +214,7 @@ paths:
           required: true
           schema:
             type: string
-      responses: 
+      responses:
         '200':
           description: 'Resource deleted'
           content:
@@ -223,4 +226,4 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
-          $ref: '#/components/responses/InternalServerError' 
+          $ref: '#/components/responses/InternalServerError'

@@ -70,7 +70,7 @@ app.get('/api/v1/course/:courseId', (req, res) => {
   }
 });
 
-app.post('/course/add', (req, res) => {
+app.post('/api/v1/course/add', (req, res) => {
   try {
     let { id, course, price } = req.body;
 
@@ -95,7 +95,7 @@ app.post('/course/add', (req, res) => {
   }
 });
 
-app.put('/course/update/:courseId', (req, res) => {
+app.put('/api/v1/course/update/:courseId', (req, res) => {
   try {
     const { courseId } = req.params;
     let { id, course, price } = req.body;
@@ -131,7 +131,7 @@ app.put('/course/update/:courseId', (req, res) => {
   }
 });
 
-app.delete('/course/delete/:courseId', (req, res) => {
+app.delete('/api/v1/course/delete/:courseId', (req, res) => {
   try {
     const { courseId } = req.params;
 
