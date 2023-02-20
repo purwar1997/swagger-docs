@@ -41,6 +41,12 @@ components:
           type: number
           format: int64
 
+    ArrayOfCourses: 
+      type: array
+      items:
+        schema: 
+          $ref: '#/components/schemas/course'
+
     Error:
       type: object
       properties:
@@ -49,6 +55,15 @@ components:
           default: false
         message:
           type: string
+
+  requestBody:
+    Course: 
+      description: A JSON object containing id, course and price
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Course' 
 
   responses:
     BadRequestError:
@@ -85,7 +100,7 @@ paths:
       description: Returns a JSON object containing id, course and price
       responses:
         '200':
-          description: OK
+          description: Resource fetched
           content:
             application/json:
               schema:
@@ -103,14 +118,11 @@ paths:
       description: Returns a JSON array of course objects containing id, course and price
       responses:
         '200':
-          description: OK
+          description: All resources fetched
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  schema:
-                    $ref: '#/components/schemas/Course'
+                $ref: '#/components/schemas/ArrayOfCourses'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -130,7 +142,7 @@ paths:
             type: string
       responses:
         '200':
-          description: OK
+          description: Resouces fetched
           content:
             application/json:
               schema:
@@ -141,3 +153,74 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  /course/create:
+    post:
+      tags:
+        - Request body
+      description: Adds a new course to the courses array
+      requestBody:
+        $ref: '#/components/requestBody/Course'
+      responses:
+        '201':
+          description: 'Resource created',
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfCourses'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /course/update/{courseId}:
+    put:
+      tags:
+        - Path parameters and request body
+      description: Finds a course by courseId and updates it
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBody/Course'
+      responses:
+        '201':
+          description: 'Resource updated'
+          content: 
+            appication/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfCourses'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError' 
+
+  /course/delete/{courseId}:
+    delete:
+      tags: 
+        - Path parameters
+      description: Finds a course by courseId and deletes it
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses: 
+        '200':
+          description: 'Resource deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfCourses'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError' 
