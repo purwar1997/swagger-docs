@@ -188,6 +188,9 @@ app.get('/api/v1/search', (req, res) => {
 
 app.post('/api/v1/upload', (req, res) => {
   try {
+    // accessing request headers
+    console.log(req.headers, req.header('Authorization'), req.get('Auth'));
+
     if (!req.files || Object.keys(req.files).length === 0) {
       throw new CustomError('No image was uploaded', 400);
     }

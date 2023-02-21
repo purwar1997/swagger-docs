@@ -20,14 +20,17 @@ servers:
 
 components:
   securitySchemes:
-    bearerAuth:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    cookieAuth:
+    ApiKeyAuth:
       type: apiKey
-      in: cookie
-      name: token
+      in: header
+      name: X-API-Key
 
   schemas:
     Course:
@@ -95,8 +98,10 @@ components:
             $ref: '#/components/schemas/Error'
 
 security:
-  - bearerAuth: []
-  - cookieAuth: []
+  - BasicAuth: []
+    ApiKeyAuth: []
+  - BearerAuth: []
+    ApiKeyAuth: []
 
 paths:
   /courses:
@@ -274,6 +279,13 @@ paths:
         - multipart/form-data
       produces:
         - application/json
+      parameters:
+        - in: header
+          name: Auth
+          required: true
+          schema:
+            type: string
+          description: Auth token
       requestBody:
         required: true
         content:
