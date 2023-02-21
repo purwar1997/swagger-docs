@@ -309,7 +309,7 @@ paths:
                 properties:
                   message:
                     type: string
-                  uploadedImage:
+                  image:
                     type: object
         '400':
           $ref: '#/components/responses/BadRequestError'

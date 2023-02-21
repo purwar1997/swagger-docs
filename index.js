@@ -22,17 +22,17 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explore
 let courses = [
   {
     id: '100',
-    course: 'Frontend using React.js',
+    course: 'React.js',
     price: 500,
   },
   {
     id: '200',
-    course: 'Frontend using Vue.js',
+    course: 'Vue.js',
     price: 400,
   },
   {
     id: '300',
-    course: 'Backend using Node.js',
+    course: 'Node.js',
     price: 700,
   },
 ];
