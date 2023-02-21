@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yaml');
 const fs = require('fs');
+const fileUpload = require('express-fileupload');
 const CustomError = require('./CustomError');
 
 dotenv.config();
@@ -15,6 +16,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
 
 let courses = [
@@ -176,6 +178,33 @@ app.get('/api/v1/search', (req, res) => {
     }
 
     res.status(200).json(searchResult);
+  } catch (err) {
+    res.status(err.code || 500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+app.post('/api/v1/upload', (req, res) => {
+  try {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      throw new CustomError('No image was uploaded', 400);
+    }
+
+    const image = req.files.image;
+    const path = __dirname + '/uploads/' + image.name;
+
+    image.mv(path, function (err) {
+      if (err) {
+        throw new CustomError(err.message || 'Failure uploading image on a server', 500);
+      }
+    });
+
+    res.status(201).json({
+      message: 'Image successfully uploaded',
+      image,
+    });
   } catch (err) {
     res.status(err.code || 500).json({
       success: false,

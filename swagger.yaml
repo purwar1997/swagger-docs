@@ -40,6 +40,10 @@ components:
         price:
           type: number
           format: int64
+      required:
+        - id
+        - course
+        - price
 
     ArrayOfCourses:
       type: array
@@ -55,6 +59,9 @@ components:
           default: false
         message:
           type: string
+      required:
+        - success
+        - message
 
   requestBody:
     Course:
@@ -159,7 +166,6 @@ paths:
         required: true
         schema:
           type: string
-        default: '100'
 
     get:
       tags:
@@ -256,5 +262,44 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /upload:
+    post:
+      tags:
+        - File upload
+      description: Uploads image on a server
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+            encoding:
+              image:
+                content-type: image/png, image/jpg, image/jpeg
+      responses:
+        '201':
+          description: File successfully uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  uploadedImage:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequestError'
         '500':
           $ref: '#/components/responses/InternalServerError'
